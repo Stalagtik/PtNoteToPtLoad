@@ -1,4 +1,4 @@
-Berquer Théo 3SI4
+Théo 3SI4
 
 execution du pt note to pt load.
 
