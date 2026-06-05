@@ -2,7 +2,7 @@
 
 This project demonstrates how to modify an ELF binary on Linux (x86_64) to inject a custom shellcode. It accomplishes this by converting a `PT_NOTE` segment header into a loadable `PT_LOAD` segment header, redirecting the entry point, and appending the shellcode to the end of the binary.
 
-Developed by **TheoOrigin** as part of the 3SI4 school curriculum.
+**TheoOrigin** as part of the 3SI4 school curriculum.
 
 ---
 
